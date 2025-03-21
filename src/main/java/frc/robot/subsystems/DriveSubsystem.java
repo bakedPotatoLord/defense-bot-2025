@@ -114,18 +114,6 @@ public class DriveSubsystem extends SubsystemBase {
         DriveConstants.rotationPostitionTolerance,
         DriveConstants.rotationVelocityTolerance);
 
-    var driveTab = Shuffleboard.getTab("drive");
-    driveTab.addDoubleArray("module velocities",
-        () -> new double[] {
-            m_frontLeft.getState().speedMetersPerSecond,
-            m_frontLeft.velocitySetpoint
-        });
-    driveTab.addDoubleArray("rotation ",
-        () -> new double[] {
-            rotationSetpoint.getDegrees(),
-            MathUtil.inputModulus(gyro.getRotation().getDegrees(), -180, 180)
-        });
-    driveTab.add("rotation pid", rotationPID);
 
     AutoBuilder.configure(
         this::getPose,
