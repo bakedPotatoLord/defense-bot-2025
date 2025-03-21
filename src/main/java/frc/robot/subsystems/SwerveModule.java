@@ -7,6 +7,8 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
@@ -26,6 +28,7 @@ import frc.robot.Constants.ModuleConstants.TurningPID;
 import frc.robot.telemetry.tunable.TunableTelemetryPIDController;
 import frc.robot.telemetry.tunable.gains.TunableDouble;
 import frc.robot.telemetry.tunable.gains.TunablePIDGains;
+import frc.robot.telemetry.types.DoubleTelemetryEntry;
 
 public class SwerveModule extends SubsystemBase {
   private final SparkMax m_driveMotor;
@@ -39,8 +42,11 @@ public class SwerveModule extends SubsystemBase {
 
   public final TunableDouble turningEncoderOffset;
 
+  public final DoubleTelemetryEntry velocitySetpoint = new DoubleTelemetryEntry(getName()+"/velocitySetpoint", true);
+  public final DoubleTelemetryEntry velocityActual = new DoubleTelemetryEntry(getName()+"/velocityActual", true);
 
-  public double velocitySetpoint = 0;
+
+
 
   // Using a TrapezoidProfile PIDController to allow for smooth turning
 
@@ -66,11 +72,7 @@ public class SwerveModule extends SubsystemBase {
     m_driveEncoder = m_driveMotor.getEncoder();
     m_turningEncoder = new CANcoder(turningEncoderChannel);
 
-    
-
     m_driveController = m_driveMotor.getClosedLoopController();
-
-
 
     var driveConfig = new SparkMaxConfig();
     
@@ -84,9 +86,12 @@ public class SwerveModule extends SubsystemBase {
     driveConfig.closedLoop
         .pidf(
             DrivePID.kP, DrivePID.kI, DrivePID.kD, DrivePID.kFF);
-    // driveConfig.encoder
-    //     .positionConversionFactor(ModuleConstants.kdrivePositionConversionFactor)
-    //     .velocityConversionFactor(ModuleConstants.kdriveVelocityConversionFactor);
+    driveConfig.encoder
+        .positionConversionFactor(ModuleConstants.kdrivePositionConversionFactor)
+        .velocityConversionFactor(ModuleConstants.kdriveVelocityConversionFactor);
+
+    m_driveMotor.configure(driveConfig,ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    System.out.println("velocity conversion factor"+m_driveMotor.configAccessor.encoder.getVelocityConversionFactor());
 
     var turningConfig = new SparkMaxConfig();
 
@@ -97,6 +102,7 @@ public class SwerveModule extends SubsystemBase {
         .idleMode(IdleMode.kCoast)
         ;
         
+    m_turningMotor.configure(turningConfig,ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
     this.turningEncoderOffset = new TunableDouble(getName()+"/offset", turingEncoderOffset, MiscConstants.TUNING_MODE) ;
 
@@ -137,10 +143,9 @@ public class SwerveModule extends SubsystemBase {
     // Calculate the drive output from the drive PID controller.
     m_driveController.setReference(desiredState.speedMetersPerSecond, ControlType.kVelocity);
     
-    System.out.println(m_driveController);
-    System.out.println(m_driveMotor.get());
 
-    this.velocitySetpoint = desiredState.speedMetersPerSecond;
+    velocitySetpoint.append( desiredState.speedMetersPerSecond);
+    velocityActual.append(m_driveEncoder.getVelocity());
 
     // Calculate the turning motor output from the turning PID controller.
     final double turnOutput = turningcontroller
