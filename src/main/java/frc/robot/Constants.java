@@ -55,6 +55,11 @@ public final class Constants {
 		public static final double kFrontRightTurningEncoderOffset = 0;// 2
 		public static final double kRearRightTurningEncoderOffset = 0;// 4
 
+		public static final boolean kFrontLeftTurningEncoderReversed = true;
+		public static final boolean kRearLeftTurningEncoderReversed = true;
+		public static final boolean kFrontRightTurningEncoderReversed = true;
+		public static final boolean kRearRightTurningEncoderReversed = true; 
+
 		public static final boolean kFrontLeftDriveEncoderReversed = true;
 		public static final boolean kRearLeftDriveEncoderReversed = true;
 		public static final boolean kFrontRightDriveEncoderReversed = true;
@@ -125,10 +130,6 @@ public final class Constants {
 		public static final int deviceID = 10;
 	}
 
-	
-	
-
-
 	public static final class OIConstants {
 		public static final int kDriverControllerPort = 0;
 		public static final int kMechanismControllerPort = 1;
@@ -137,7 +138,4 @@ public final class Constants {
 
 		public static final double rotationMultiplier = 0.01;
 	}
-
-	
-
 }

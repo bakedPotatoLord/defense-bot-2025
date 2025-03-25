@@ -10,7 +10,6 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
@@ -29,6 +28,7 @@ import frc.robot.telemetry.tunable.TunableTelemetryPIDController;
 import frc.robot.telemetry.tunable.gains.TunableDouble;
 import frc.robot.telemetry.tunable.gains.TunablePIDGains;
 import frc.robot.telemetry.types.DoubleTelemetryEntry;
+import frc.robot.telemetry.wrappers.TelemetryCANSparkMax;
 
 public class SwerveModule extends SubsystemBase {
   private final SparkMax m_driveMotor;
@@ -46,17 +46,9 @@ public class SwerveModule extends SubsystemBase {
   public final DoubleTelemetryEntry velocityActual = new DoubleTelemetryEntry(getName()+"/velocityActual", true);
 
 
-
-
   // Using a TrapezoidProfile PIDController to allow for smooth turning
 
   private final TunableTelemetryPIDController turningcontroller;
-
-
-
-  public double FF = DrivePID.kFF;
-  public double kP = DrivePID.kP;
-  public double kD = DrivePID.kD;
 
   public SwerveModule(
       String name,
@@ -64,10 +56,12 @@ public class SwerveModule extends SubsystemBase {
       int turningMotorChannel,
       int turningEncoderChannel,
       double turingEncoderOffset,
-      boolean driveEncoderReversed) {
-    m_driveMotor = new SparkMax(driveMotorChannel, MotorType.kBrushless);
+      boolean driveMotorReversed,
+      boolean turningMotorReversed) {
+        setName(name);
+    m_driveMotor = new TelemetryCANSparkMax(driveMotorChannel, MotorType.kBrushless,getName()+"drive/",MiscConstants.TUNING_MODE);
 
-    m_turningMotor = new SparkMax(turningMotorChannel, MotorType.kBrushless);
+    m_turningMotor = new TelemetryCANSparkMax(turningMotorChannel, MotorType.kBrushless,getName()+"turning/",MiscConstants.TUNING_MODE);
 
     m_driveEncoder = m_driveMotor.getEncoder();
     m_turningEncoder = new CANcoder(turningEncoderChannel);
@@ -77,7 +71,6 @@ public class SwerveModule extends SubsystemBase {
     var driveConfig = new SparkMaxConfig();
     
 
-    setName("module "+name);
 
     driveConfig.smartCurrentLimit(
         CurrentLimits.driveMotorStall,
@@ -89,18 +82,19 @@ public class SwerveModule extends SubsystemBase {
     driveConfig.encoder
         .positionConversionFactor(ModuleConstants.kdrivePositionConversionFactor)
         .velocityConversionFactor(ModuleConstants.kdriveVelocityConversionFactor);
+    driveConfig.inverted(driveMotorReversed);
 
     m_driveMotor.configure(driveConfig,ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     System.out.println("velocity conversion factor"+m_driveMotor.configAccessor.encoder.getVelocityConversionFactor());
 
-    var turningConfig = new SparkMaxConfig();
+    SparkMaxConfig turningConfig = new SparkMaxConfig();
 
     turningConfig
         .smartCurrentLimit(
             CurrentLimits.turningMotorStall,
             CurrentLimits.turningMotorFree)
         .idleMode(IdleMode.kCoast)
-        ;
+        .inverted(turningMotorReversed);
         
     m_turningMotor.configure(turningConfig,ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
