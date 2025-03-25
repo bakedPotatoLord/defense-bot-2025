@@ -55,15 +55,15 @@ public final class Constants {
 		public static final double kFrontRightTurningEncoderOffset = 0;// 2
 		public static final double kRearRightTurningEncoderOffset = 0;// 4
 
-		public static final boolean kFrontLeftTurningEncoderReversed = true;
-		public static final boolean kRearLeftTurningEncoderReversed = true;
-		public static final boolean kFrontRightTurningEncoderReversed = true;
-		public static final boolean kRearRightTurningEncoderReversed = true; 
+		public static final boolean kFrontLeftTurningEncoderReversed = false;
+		public static final boolean kRearLeftTurningEncoderReversed = false;
+		public static final boolean kFrontRightTurningEncoderReversed = false;
+		public static final boolean kRearRightTurningEncoderReversed = false; 
 
 		public static final boolean kFrontLeftDriveEncoderReversed = true;
-		public static final boolean kRearLeftDriveEncoderReversed = true;
+		public static final boolean kRearLeftDriveEncoderReversed = false;
 		public static final boolean kFrontRightDriveEncoderReversed = true;
-		public static final boolean kRearRightDriveEncoderReversed = true;
+		public static final boolean kRearRightDriveEncoderReversed = false;
 
 		public static final double kTrackWidth = 0.65;
 		// Distance between centers of right and left wheels on robot
