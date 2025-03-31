@@ -198,20 +198,36 @@ public class DriveSubsystem extends SubsystemBase {
   // }
 
   public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative) {
+    
+    var angular = DriveConstants.MAX_ANGULAR_VELOCITY.times(rot);
+    
+    double hypot = Math.hypot(xSpeed, ySpeed);
+    var velX = DriveConstants.kMaxSpeed.times(xSpeed );
+    var velY = DriveConstants.kMaxSpeed.times(ySpeed );
+    
     chassisSpeeds = fieldRelative
-        ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, gyro.getRotation())
-        : new ChassisSpeeds(xSpeed, ySpeed, rot);
+        ? ChassisSpeeds.fromFieldRelativeSpeeds(
+          velX,
+          velY, 
+          angular,
+           gyro.getRotation())
+        : new ChassisSpeeds(
+          velX,
+          velY, 
+          angular
+        );
 
     SwerveModuleState[] swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds);
 
+
     SwerveDriveKinematics.desaturateWheelSpeeds(
         swerveModuleStates,
-        DriveConstants.kMaxSpeedMetersPerSecond);
+        DriveConstants.kMaxSpeed);
 
-    m_frontLeft.setDesiredState(swerveModuleStates[0]);
-    m_frontRight.setDesiredState(swerveModuleStates[1]);
-    m_rearLeft.setDesiredState(swerveModuleStates[2]);
-    m_rearRight.setDesiredState(swerveModuleStates[3]);
+    m_frontLeft.setDesiredState(swerveModuleStates[2]);
+    m_frontRight.setDesiredState(swerveModuleStates[3]);
+    m_rearLeft.setDesiredState(swerveModuleStates[0]);
+    m_rearRight.setDesiredState(swerveModuleStates[1]);
   }
 
   // public void alignmentDrive(double xSpeed, double ySpeed, double rot, Rotation2d rotationOffset) {
@@ -247,7 +263,7 @@ public class DriveSubsystem extends SubsystemBase {
 
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(
-        desiredStates, DriveConstants.kMaxSpeedMetersPerSecond);
+        desiredStates, DriveConstants.kMaxSpeed);
     m_frontLeft.setDesiredState(desiredStates[0]);
     m_frontRight.setDesiredState(desiredStates[1]);
     m_rearLeft.setDesiredState(desiredStates[2]);
