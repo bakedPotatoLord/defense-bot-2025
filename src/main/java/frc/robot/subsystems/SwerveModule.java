@@ -82,7 +82,8 @@ public class SwerveModule extends SubsystemBase {
     driveConfig.encoder
         .positionConversionFactor(ModuleConstants.kdrivePositionConversionFactor)
         .velocityConversionFactor(ModuleConstants.kdriveVelocityConversionFactor);
-    driveConfig.inverted(driveMotorReversed);
+    driveConfig
+    .inverted(driveMotorReversed);
 
     m_driveMotor.configure(driveConfig,ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     System.out.println("velocity conversion factor"+m_driveMotor.configAccessor.encoder.getVelocityConversionFactor());
