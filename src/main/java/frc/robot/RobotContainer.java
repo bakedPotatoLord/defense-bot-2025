@@ -28,7 +28,7 @@ public class RobotContainer {
 	// The robot's subsystems
 	private final Gyro gyro = new Gyro();
 	private final DriveSubsystem driveBase = new DriveSubsystem(gyro);
-
+	private final LEDSubsystem LEDs = new LEDSubsystem();
 
 
 	// The driver's controller
@@ -58,12 +58,14 @@ public class RobotContainer {
 		driveBase.setDefaultCommand(
 				new RunCommand(() -> driveBase.drive(
 						MathUtil.applyDeadband(-m_driverController.getLeftY(),0.1),
-						MathUtil.applyDeadband(-m_driverController.getLeftX(),0.1),
-						// MathUtil.applyDeadband(0,0.1),
+						MathUtil.applyDeadband(m_driverController.getLeftX(),0.1),
+						MathUtil.applyDeadband(-m_driverController.getRightX(),0.1),
 						// MathUtil.applyDeadband(1,0.1),
-						0,
-						false),
+						
+						true),
 						driveBase));
+
+		LEDs.startAll();
 
 		autoChooser = AutoBuilder.buildAutoChooser(); // Default auto will be `Commands.none()`
 		SmartDashboard.putData("Auto Mode", autoChooser);
