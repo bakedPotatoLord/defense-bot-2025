@@ -5,8 +5,19 @@
 package frc.robot;
 
 
+import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.Seconds;
+
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.Time;
+import edu.wpi.first.units.measure.Velocity;
+import edu.wpi.first.wpilibj.util.Color;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
@@ -60,14 +71,14 @@ public final class Constants {
 		public static final boolean kFrontRightTurningEncoderReversed = false;
 		public static final boolean kRearRightTurningEncoderReversed = false; 
 
-		public static final boolean kFrontLeftDriveEncoderReversed = true;
+		public static final boolean kFrontLeftDriveEncoderReversed = false;
 		public static final boolean kRearLeftDriveEncoderReversed = false;
 		public static final boolean kFrontRightDriveEncoderReversed = true;
-		public static final boolean kRearRightDriveEncoderReversed = false;
+		public static final boolean kRearRightDriveEncoderReversed = true;
 
-		public static final double kTrackWidth = 0.65;
+		public static final double kTrackWidth = 0.5;
 		// Distance between centers of right and left wheels on robot
-		public static final double kWheelBase = 0.45;
+		public static final double kWheelBase = 0.5;
 		// Distance between front and back wheels on robot
 		public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
 				new Translation2d(kWheelBase / 2, kTrackWidth / 2),
@@ -77,8 +88,10 @@ public final class Constants {
 
 		public static final boolean kGyroReversed = false;
 
-		public static final double kMaxSpeedMetersPerSecond = 4.2;
-		public static final double kDemoSpeedMetersPerSecond = 1.0;
+		public static final LinearVelocity kMaxSpeed = MetersPerSecond.of(3);
+
+
+		public static final AngularVelocity MAX_ANGULAR_VELOCITY = RadiansPerSecond.of(3);
 
 		// used for keeping the robot pointed in the right direction
 		public static final class RotationPID {
@@ -138,4 +151,49 @@ public final class Constants {
 
 		public static final double rotationMultiplier = 0.01;
 	}
+
+	public static class LEDConstants{
+		public static final int PWM_OUTPUT = 3;
+	
+		public static final int TOTAL_LEDS = 8;
+		public static final int NUM_STRIPS = 4;
+		public static final int LEDS_PER_STRIP =  TOTAL_LEDS/NUM_STRIPS;
+	
+		public static final LinearVelocity SCROLL_SPEED = MetersPerSecond.of(1);
+		public static final Distance LEDS_PER_METER = Meters.of(60);
+	
+		public static final Time BLINK_PERIOD = Seconds.of(1);
+	
+	
+		public static final Color COLOR_RED = new Color("#cf1b2a");
+		public static final Color COLOR_BLUE = new Color("#3fd4b6");
+		public static final Color COLOR_PURPLE = new Color("#a42dcc");
+		
+		public static final Color COLOR_WHITE = Color.kWhite;
+	
+		public static final double LIGHTEN_PERCENT = 0.1 ;
+	
+		public static final Color COLOR_RED_LIGHTEN = Color.lerpRGB(COLOR_RED, COLOR_WHITE, LIGHTEN_PERCENT);
+		public static final Color COLOR_BLUE_LIGHTEN = Color.lerpRGB(COLOR_BLUE, COLOR_WHITE, LIGHTEN_PERCENT);
+		public static final Color COLOR_PURPLE_LIGHTEN = Color.lerpRGB(COLOR_PURPLE, COLOR_WHITE, LIGHTEN_PERCENT);
+	
+	
+		/*
+		 * from kannan:
+		 * red for when we want coral
+		 * blue for taking alage to processor
+		 * purple for taking alage to the net
+		 */
+		public static enum LEDType{
+		  flashRed,
+		  flashBlue,
+		  flashPurple,
+		  waveRed,
+		  waveBlue,
+		  wavePurple,
+		  waveRainbow,
+		}
+	
+		
+	  }
 }
